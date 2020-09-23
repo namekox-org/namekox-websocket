@@ -59,8 +59,6 @@ WEBSOCKET:
 
 > namekox run ping
 ```shell script
-> namekox run ping
-
 2020-09-23 18:05:39,028 DEBUG load service classes from ping failed,
 2020-09-23 18:05:39,295 DEBUG load container class from namekox_core.core.service.container:ServiceContainer
 2020-09-23 18:05:39,296 DEBUG starting services ['ping']
