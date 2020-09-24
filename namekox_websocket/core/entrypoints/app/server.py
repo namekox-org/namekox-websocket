@@ -3,9 +3,9 @@
 # author: forcemain@163.com
 
 
-from namekox_websocket.core.server import BaseWebSocketServer
+from namekox_websocket.core.server import BaseWssServer
 from namekox_core.core.service.entrypoint import EntrypointProvider
 
 
-class WebSocketServer(BaseWebSocketServer, EntrypointProvider):
+class WssServer(BaseWssServer, EntrypointProvider):
     pass

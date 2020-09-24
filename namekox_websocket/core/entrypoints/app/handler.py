@@ -15,14 +15,14 @@ from namekox_core.core.service.entrypoint import Entrypoint
 from namekox_websocket.core.message import WssMessage, WspMessage
 
 
-from .server import WebSocketServer
+from .server import WssServer
 
 
 logger = getLogger(__name__)
 
 
 class BaseWebSocketHandler(Entrypoint):
-    server = WebSocketServer()
+    server = WssServer()
 
     def __init__(self, rule, methods=('GET',), **kwargs):
         self.rule = rule

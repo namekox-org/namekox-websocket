@@ -10,7 +10,6 @@ import werkzeug
 
 from uuid import UUID
 from werkzeug import Request
-from collections import namedtuple
 from eventlet import wsgi, wrap_ssl
 from werkzeug.routing import Rule, Map
 from namekox_core.core.friendly import ignore_exception
@@ -19,9 +18,6 @@ from namekox_websocket.constants import WEBSOCKET_CONFIG_KEY, DEFAULT_WEBSOCKET_
 
 
 from .hub import WebSocketHub
-
-
-WebSocketStruct = namedtuple('WebSocketStruct', ['sock', 'context'])
 
 
 class WsgiApp(object):
@@ -41,7 +37,7 @@ class WsgiApp(object):
         return response(environ, start_response)
 
 
-class BaseWebSocketServer(SharedExtension, ControlExtension):
+class BaseWssServer(SharedExtension, ControlExtension):
     SSL_ARGS = [
         'keyfile', 'certfile', 'server_side', 'cert_reqs',
         'ssl_version', 'ca_certs',
@@ -61,7 +57,7 @@ class BaseWebSocketServer(SharedExtension, ControlExtension):
         self.srvargs = None
         self.started = False
         self.hub_storage = kwargs.get('hub_storage', None)
-        super(BaseWebSocketServer, self).__init__(*args, **kwargs)
+        super(BaseWssServer, self).__init__(*args, **kwargs)
 
     def setup(self):
         if self.host is not None and self.port is not None and self.sslargs is not None and self.srvargs is not None:

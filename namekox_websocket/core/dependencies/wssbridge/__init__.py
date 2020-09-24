@@ -15,14 +15,14 @@ from namekox_websocket.core.message import WssMessage, WspMessage
 from namekox_websocket.constants import WEBSOCKET_CONFIG_KEY, DEFAULT_WEBSOCKET_PUB_ADDR, DEFAULT_WEBSOCKET_SUB_ADDR
 
 
-from .server import WebSocketServer
+from .server import WssServer
 
 
 logger = getLogger(__name__)
 
 
 class WssBridge(Dependency):
-    server = WebSocketServer()
+    server = WssServer()
 
     def __init__(self, *args, **kwargs):
         self.gt = None
