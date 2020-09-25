@@ -122,3 +122,7 @@ WEBSOCKET:
 ```
 
 # Debug
+> namekox shell
+```shell script
+In [1]: nx.wssbridge.proxy.push(channel='ping', message={'nb': True})
+```
