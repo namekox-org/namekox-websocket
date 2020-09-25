@@ -10,14 +10,19 @@ import werkzeug
 
 from uuid import UUID
 from werkzeug import Request
+from logging import getLogger
 from eventlet import wsgi, wrap_ssl
 from werkzeug.routing import Rule, Map
 from namekox_core.core.friendly import ignore_exception
+from namekox_core.core.loaders import import_dotpath_class
 from namekox_core.core.service.extension import SharedExtension, ControlExtension
 from namekox_websocket.constants import WEBSOCKET_CONFIG_KEY, DEFAULT_WEBSOCKET_HOST, DEFAULT_WEBSOCKET_PORT
 
 
 from .hub import WebSocketHub
+
+
+logger = getLogger(__name__)
 
 
 class WsgiApp(object):
@@ -56,6 +61,7 @@ class BaseWssServer(SharedExtension, ControlExtension):
         self.sslargs = None
         self.srvargs = None
         self.started = False
+        self.middlewares = None
         self.hub_storage = kwargs.get('hub_storage', None)
         super(BaseWssServer, self).__init__(*args, **kwargs)
 
@@ -64,6 +70,7 @@ class BaseWssServer(SharedExtension, ControlExtension):
             return
         self.hub = WebSocketHub(server=self, storage=self.hub_storage)
         config = self.container.config.get(WEBSOCKET_CONFIG_KEY, {}).copy()
+        self.middlewares = config.pop('middlewares', []) or []
         self.host = config.pop('host', DEFAULT_WEBSOCKET_HOST) or DEFAULT_WEBSOCKET_HOST
         self.port = config.pop('port', DEFAULT_WEBSOCKET_PORT) or DEFAULT_WEBSOCKET_PORT
         self.sslargs = {k: config.pop(k) for k in config if k in self.SSL_ARGS}
@@ -108,8 +115,24 @@ class BaseWssServer(SharedExtension, ControlExtension):
         connection = [addr, sock, wsgi.STATE_IDLE]
         self.ev_serv.process_request(connection)
 
+    def apply_addons(self, app):
+        for mid_cls_path in self.middlewares:
+            msg = 'load middleware objects from {} failed, '
+            err, mid_cls = import_dotpath_class(mid_cls_path)
+            log = False
+            if err is not None:
+                log = True
+                msg += err
+            log and logger.warn(msg.format(mid_cls_path))
+            if mid_cls is None:
+                continue
+            fun = mid_cls(app)
+            app = fun(self)
+        return app
+
     def get_wsgi_app(self):
-        return WsgiApp(self)
+        app = WsgiApp(self)
+        return self.apply_addons(app)
 
     def get_wsgi_srv(self):
         sock = self.ev_sock if not self.sslargs else wrap_ssl(self.ev_sock, **self.sslargs)
