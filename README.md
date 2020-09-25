@@ -35,6 +35,8 @@ class Ping(object):
 # Running
 > config.yaml
 ```yaml
+CONTEXT:
+  - namekox_websocket.cli.subctx.wssbridge:WssBridge
 COMMAND:
   - namekox_websocket.cli.subcmd.wssbridge:WssBridge
 WEBSERVER:
@@ -118,3 +120,5 @@ WEBSOCKET:
 2020-09-23 18:34:49,017 DEBUG service ping already stopped
 2020-09-23 18:34:49,018 DEBUG services ['ping'] killed
 ```
+
+# Debug
