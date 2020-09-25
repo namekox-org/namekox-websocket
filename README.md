@@ -52,7 +52,28 @@ WEBSOCKET:
   sub_addr: tcp://127.0.0.1:60002
 ```
 
-> namekox wssbridge
+> namekox wssbridge --help
+```
+usage: namekox wssbridge [-h] {start,gencert} ...
+
+start websocket bridge
+
+positional arguments:
+  {start,gencert}
+    start          start zmq proxy server
+    gencert        create zmq certificates
+
+optional arguments:
+  -h, --help       show this help message and exit
+```
+
+> namekox wssbridge gencert
+```shell script
+2020-09-23 18:05:14,621 WARNING server.key or server.key_secret already exists, ignore
+2020-09-23 18:05:14,621 WARNING client.key or client.key_secret already exists, ignore
+```
+
+> namekox wssbridge start
 ```shell script
 2020-09-23 18:06:11,642 DEBUG sub: bind on tcp://0.0.0.0:60002
 2020-09-23 18:06:11,642 DEBUG pub: bind on tcp://0.0.0.0:60001
@@ -122,6 +143,25 @@ WEBSOCKET:
 ```
 
 # Debug
+> config.yaml
+```yaml
+CONTEXT:
+  - namekox_websocket.cli.subctx.wssbridge:WssBridge
+COMMAND:
+  - namekox_websocket.cli.subcmd.wssbridge:WssBridge
+WEBSERVER:
+  host: 0.0.0.0
+  port: 80
+WSSBRIDGE:
+  pub_addr: tcp://0.0.0.0:60001
+  sub_addr: tcp://0.0.0.0:60002
+WEBSOCKET:
+  host: 0.0.0.0
+  port: 8000
+  pub_addr: tcp://127.0.0.1:60001
+  sub_addr: tcp://127.0.0.1:60002
+```
+
 > namekox shell
 ```shell script
 In [1]: nx.wssbridge.proxy.push(channel='ping', message={'nb': True})

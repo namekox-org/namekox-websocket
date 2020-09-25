@@ -3,10 +3,11 @@
 # author: forcemain@163.com
 
 
-import eventlet.green.zmq as zmq
+import os
 
-
+import zmq.auth as zmq_auth
 from logging import getLogger
+import eventlet.green.zmq as zmq
 from namekox_websocket.core.hub import WebSocketHub
 from namekox_core.core.spawning import SpawningProxy
 from namekox_core.core.friendly import ignore_exception
@@ -45,7 +46,14 @@ class WssBridge(Dependency):
         self.sub_sock.setsockopt(zmq.SUBSCRIBE, '')
 
     def start(self):
+        server_public_file = os.path.join('.', 'server.key')
+        client_secret_file = os.path.join('.', 'client.key_secret')
         self.pub_sock.setsockopt(zmq.HEARTBEAT_IVL, 2000)
+        client_public, client_secret = zmq_auth.load_certificate(client_secret_file)
+        self.pub_sock.curve_secretkey = client_secret
+        self.pub_sock.curve_publickey = client_public
+        server_public, _ = zmq_auth.load_certificate(server_public_file)
+        self.pub_sock.curve_serverkey = server_public
         self.pub_sock.connect(self.pub_addr)
         self.sub_sock.setsockopt(zmq.HEARTBEAT_IVL, 2000)
         self.sub_sock.connect(self.sub_addr)
