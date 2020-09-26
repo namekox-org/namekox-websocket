@@ -56,7 +56,7 @@ WEBSOCKET:
 ```
 usage: namekox wssbridge [-h] {start,gencert} ...
 
-start websocket bridge
+manage websocket bridge
 
 positional arguments:
   {start,gencert}
