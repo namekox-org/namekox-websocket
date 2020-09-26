@@ -140,7 +140,7 @@ class WssBridgeGenCert(BaseCommand):
 
 
 class WssBridge(BaseCommand):
-    """ start websocket bridge """
+    """ manage websocket bridge """
     @classmethod
     def name(cls):
         return 'wssbridge'
