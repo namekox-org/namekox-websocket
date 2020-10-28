@@ -12,21 +12,24 @@ bash install.sh
 
 
 from namekox_websocket.core.message import WspMessage
-from namekox_websocket.core.entrypoints.app import app as wss_app
-from namekox_webserver.core.entrypoints.app import app as web_app
 from namekox_websocket.core.dependencies.wssbridge import WssBridge
+from namekox_websocket.core.entrypoints.app.handler import WebSocketHandler
+from namekox_webserver.core.entrypoints.app.handler import ApiServerHandler
+
+
+app = type(__name__, (object,), {'api': ApiServerHandler.decorator, 'wss': WebSocketHandler.decorator})
 
 
 class Ping(object):
     name = 'ping'
     bridge = WssBridge()
 
-    @web_app.api('/', methods=['GET'])
-    def web_pong(self, request):
+    @app.api('/', methods=['GET'])
+    def api_pong(self, request):
         message = WspMessage(data={'web_pong': True})
         self.bridge.broadcast('ping', message)
 
-    @wss_app.wss('/', methods=['GET'])
+    @app.wss('/', methods=['GET'])
     def wss_pong(self, request, sock_id, data):
         self.bridge.hub.subscribe('ping', sock_id)
         return {'wss_pong': True}
@@ -35,8 +38,6 @@ class Ping(object):
 # Running
 > config.yaml
 ```yaml
-CONTEXT:
-  - namekox_websocket.cli.subctx.wssbridge:WssBridge
 COMMAND:
   - namekox_websocket.cli.subcmd.wssbridge:WssBridge
 WEBSERVER:
