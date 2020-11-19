@@ -103,7 +103,7 @@ class BaseWssServer(SharedExtension, ControlExtension):
             self.hub.unsubscribe(c, sock_id)
             self.hub.unsubscribe(sock_id, c)
         ws_sock = self.hub.sockets.pop(sock_id, None)
-        ws_sock and ignore_exception(ws_sock.close)
+        ws_sock and ignore_exception(ws_sock.close)()
 
     def handle_connect(self):
         while self.accpted:

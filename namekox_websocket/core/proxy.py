@@ -39,4 +39,4 @@ class Proxy(object):
         self.pub_sock.send_pyobj(data)
 
     def close(self):
-        ignore_exception(self.pub_sock.close)
+        ignore_exception(self.pub_sock.close)()
