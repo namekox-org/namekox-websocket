@@ -12,6 +12,7 @@ from werkzeug.routing import Rule
 from eventlet.websocket import WebSocketWSGI
 from namekox_core.core.friendly import as_wraps_partial
 from namekox_core.core.service.entrypoint import Entrypoint
+from namekox_websocket.core.messaging import get_message_headers
 from namekox_websocket.core.message import WssMessage, WspMessage
 
 
@@ -76,7 +77,7 @@ class BaseWebSocketHandler(Entrypoint):
     def handle_message(self, request, sock_id, data):
         context, result, exc_info = None, None, None
         try:
-            ctxdata = self.server.get_context_from_header(request)
+            ctxdata = get_message_headers(request)
             args, kwargs = (request, sock_id, data), request.path_values
             event = Event()
             res_handler = as_wraps_partial(self.res_handler, event)

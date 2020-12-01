@@ -147,8 +147,3 @@ class BaseWssServer(SharedExtension, ControlExtension):
                 continue
             url_map.add(rule)
         return url_map
-
-    @staticmethod
-    def get_context_from_header(request):
-        # TODO: headers to context
-        return {}
