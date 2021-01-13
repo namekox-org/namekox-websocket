@@ -44,6 +44,10 @@ class BaseWebSocketHandler(Entrypoint):
         return Rule(self.rule, methods=self.methods, endpoint=self)
 
     def handle_request(self, request):
+        print('=' * 100)
+        print(request.headers)
+        print('=' * 100)
+
         def handler(ws_sock):
             sock_id = self.server.hub.add_wsock(ws_sock)
             try:
