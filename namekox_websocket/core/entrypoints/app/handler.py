@@ -10,10 +10,10 @@ from logging import getLogger
 from eventlet.event import Event
 from werkzeug.routing import Rule
 from eventlet.websocket import WebSocketWSGI
+from namekox_websocket.core.message import WssMessage
 from namekox_core.core.friendly import as_wraps_partial
 from namekox_core.core.service.entrypoint import Entrypoint
 from namekox_websocket.core.messaging import get_message_headers
-from namekox_websocket.core.message import WssMessage, WspMessage
 
 
 from .server import WssServer
@@ -45,17 +45,15 @@ class BaseWebSocketHandler(Entrypoint):
 
     def handle_request(self, request):
         def handler(ws_sock):
-            sock_id = self.server.add_websocket(ws_sock)
-            self.server.hub.subscribe('default', sock_id)
+            sock_id = self.server.hub.add_wsock(ws_sock)
             try:
                 self.handle_connect(request, sock_id, ws_sock)
                 while self.accpted:
                     data = ws_sock.wait()
                     if data is None:
                         break
-                    rspdata = self.handle_message(request, sock_id, data)
-                    channel, message = WssMessage(message=rspdata).serialize()
-                    ws_sock.send(message)
+                    ws_mesg = self.handle_message(request, sock_id, data)
+                    ws_sock.send(ws_mesg.as_json())
             except Exception as e:
                 msg = 'ws_sock:{} send msg error {}'.format(sock_id, e.message)
                 logger.error(msg)
@@ -96,7 +94,7 @@ class BaseWebSocketHandler(Entrypoint):
         raise NotImplementedError
 
     def handle_sockclose(self, request, sock_id, exc_info):
-        self.server.del_websocket(sock_id)
+        self.server.hub.del_wsock(sock_id)
 
 
 class WebSocketHandler(BaseWebSocketHandler):
@@ -109,10 +107,10 @@ class WebSocketHandler(BaseWebSocketHandler):
         )
 
     def handle_response(self, request, context, result):
-        response = WspMessage(data=result)
-        return response.as_dict()
+        errs, data = '', result
+        return WssMessage(errs=errs, data=data)
 
     def handle_exception(self, request, context, exc_info):
         exc_type, exc_value, exc_trace = exc_info
-        response = WspMessage(succ=False, errs=exc_value.message, data=None)
-        return response.as_dict()
+        errs, data = exc_value.message, None
+        return WssMessage(errs=errs, data=data)
