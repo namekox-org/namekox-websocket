@@ -2,12 +2,18 @@
 
 # author: forcemain@163.com
 
+import sys
+
 
 from logging import getLogger
 from namekox_core.core.spawning import SpawningProxy
 from namekox_websocket.core.message import WssMessage
 from namekox_core.core.generator import generator_uuid
 from namekox_core.core.friendly import as_singleton_cls, ignore_exception
+
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 logger = getLogger(__name__)
