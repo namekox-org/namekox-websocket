@@ -16,14 +16,14 @@ readme = open(os.path.join(curdir, 'READIT.md'), 'rb', 'utf-8').read()
 
 setup(
     name='namekox-websocket',
-    version='0.0.12',
+    version='0.0.13',
     description='namekox websocket',
     long_description_content_type='text/markdown',
     long_description=readme,
     author='forcemain',
     url='https://forcemain.github.io/',
     packages=find_packages(exclude=['test', 'test.*']),
-    install_requires=["namekox-webserver>=0.0.1", "anyjson>=0.3.3"],
+    install_requires=["namekox-webserver", "anyjson==0.3.3"],
     zip_safe=True,
     license='Apache License, Version 2.0',
     classifiers=[
